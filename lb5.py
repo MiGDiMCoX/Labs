@@ -39,29 +39,36 @@ h, s, v = cv.split(image_hsv)
 
 
 low_h = 0
-high_h = 255
+high_h = 180
 
 low_s = 0
-high_s = 45
+high_s = 255
 
 low_v = 0
-high_v = 205
+high_v = 50
 
 # Создание маски на основе всех трех каналов
 mask = cv.inRange(h, low_h, high_h) & cv.inRange(s, low_s, high_s) & cv.inRange(v, low_v, high_v)
 result = cv.bitwise_and(image_rgb, image_rgb, mask=mask)
 
+# Создаем белый фон того же размера, что и исходное изображение
+white_background = np.ones_like(image_rgb) * 255
+
+# Создаем итоговое изображение, где область с результатом будет видна на белом фоне
+final_result = np.where(result == 0, white_background, result)
 gs = plt.GridSpec(1, 2)
 plt.figure(figsize=(10, 8))
 
 
 plt.subplot(gs[0])
-plt.imshow(mask, cmap='gray')
+plt.imshow(mask)
 plt.title('Маска')
 plt.xticks([]), plt.yticks([])
 
 
 plt.subplot(gs[1])
-plt.imshow(result)
+plt.imshow(final_result)
 plt.title('Изображение с пикселями выделенного цвета')
+plt.xticks([]), plt.yticks([])
 plt.show()
+
